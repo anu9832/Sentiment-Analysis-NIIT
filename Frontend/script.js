@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000/predict";
+const API_URL = "https://sentiment-analysis-19y3.onrender.com";
 
 const textarea = document.getElementById("review-text");
 const analyzeBtn = document.getElementById("analyze-btn");
