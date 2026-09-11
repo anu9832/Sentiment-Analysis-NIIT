@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sentiment Reader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="page">
+    <header class="page-head">
+      <h1>Sentiment Reader</h1>
+      <p class="sub">Paste a sentence or a short review. A small neural network, trained on IMDb reviews, will guess whether it's positive or negative.</p>
+    </header>
+
+    <section class="card">
+      <label for="review-text" class="field-label">Text to analyze</label>
+      <textarea id="review-text" rows="6" placeholder="e.g. The pacing dragged in the middle but the ending completely won me over."></textarea>
+
+      <div class="controls">
+        <button id="analyze-btn" type="button">Analyze</button>
+        <span id="char-count" class="char-count">0 characters</span>
+      </div>
+
+      <div id="error-box" class="error-box hidden"></div>
+    </section>
+
+    <section id="result-strip" class="result-strip hidden">
+      <div class="result-row">
+        <span id="result-emoji" class="result-emoji">🙂</span>
+        <div class="result-text">
+          <span id="result-label" class="result-label">POSITIVE</span>
+          <span id="result-confidence" class="result-confidence">confidence 0%</span>
+        </div>
+      </div>
+      <div class="confidence-track">
+        <div id="confidence-fill" class="confidence-fill"></div>
+      </div>
+    </section>
+
+    <footer class="page-foot">
+      <span>FastAPI backend · Keras model · trained on IMDb reviews</span>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
