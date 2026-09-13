@@ -1,85 +1,185 @@
-// const API_URL = "http://127.0.0.1:8000/predict";
 const API_URL = "https://sentiment-analysis-19y3.onrender.com/predict";
-
-const textarea = document.getElementById("review-text");
-const analyzeBtn = document.getElementById("analyze-btn");
-const charCount = document.getElementById("char-count");
-const errorBox = document.getElementById("error-box");
-
-const resultStrip = document.getElementById("result-strip");
-const resultEmoji = document.getElementById("result-emoji");
-const resultLabel = document.getElementById("result-label");
-const resultConfidence = document.getElementById("result-confidence");
-const confidenceFill = document.getElementById("confidence-fill");
-
-textarea.addEventListener("input", () => {
-  charCount.textContent = `${textarea.value.length} characters`;
+const textInput = document.getElementById("textInput");
+const charCount = document.getElementById("charCount");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const btnText = document.getElementById("btnText");
+const loading = document.getElementById("loading");
+const resultSection = document.getElementById("resultSection");
+const sentimentText =
+    document.getElementById("sentimentText");
+const sentimentEmoji =
+    document.getElementById("sentimentEmoji");
+const sentimentCircle =
+    document.getElementById("sentimentCircle");
+const sentimentDescription =
+    document.getElementById("sentimentDescription");
+const confidenceText =
+    document.getElementById("confidenceText");
+const progressBar =
+    document.getElementById("progressBar");
+const mobileMenuBtn =
+    document.getElementById("mobileMenuBtn");
+const mobileNav =
+    document.getElementById("mobileNav");
+textInput.addEventListener("input", function () {
+    charCount.textContent = this.value.length;
 });
-
-analyzeBtn.addEventListener("click", runAnalysis);
-
-textarea.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-    runAnalysis();
-  }
-});
-
-async function runAnalysis() {
-  const text = textarea.value.trim();
-
-  hideError();
-
-  if (!text) {
-    showError("Type something first.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+const sampleButtons =
+    document.querySelectorAll(".sample-btn");
+sampleButtons.forEach(button => {
+    button.addEventListener("click", function () {
+        textInput.value =
+            this.getAttribute("data-text");
+        charCount.textContent =
+            textInput.value.length;
+        textInput.focus();
     });
-
-    if (!res.ok) {
-      throw new Error(`Server responded with ${res.status}`);
+});
+mobileMenuBtn.addEventListener("click", function () {
+    mobileNav.classList.toggle("show");
+});
+const mobileLinks =
+    mobileNav.querySelectorAll("a");
+mobileLinks.forEach(link => {
+    link.addEventListener("click", function () {
+        mobileNav.classList.remove("show");
+    });
+});
+analyzeBtn.addEventListener("click", analyzeSentiment);
+async function analyzeSentiment() {
+    const text =
+        textInput.value.trim();
+    if (!text) {
+        alert("Please enter some text to analyze.");
+        textInput.focus();
+        return;
     }
-
-    const data = await res.json();
-    showResult(data);
-  } catch (err) {
-    console.error(err);
-    showError("Couldn't reach the backend. Is it running on port 8000?");
-  } finally {
-    setLoading(false);
-  }
+    analyzeBtn.disabled = true;
+    btnText.textContent = "Analyzing...";
+    loading.classList.add("show");
+    try {
+        const response = await fetch(
+            API_URL,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    text: text
+                })
+            }
+        );
+        if (!response.ok) {
+            throw new Error(
+                "Server returned an error."
+            );
+        }
+        const data =
+            await response.json();
+        console.log(
+            "API Response:",
+            data
+        );
+        displayResult(data);
+    } catch (error) {
+        console.error(error);
+        alert(
+            "Unable to connect to the sentiment analysis server."
+        );
+    } finally {
+        analyzeBtn.disabled = false;
+        btnText.textContent =
+            "Analyze Sentiment";
+        loading.classList.remove("show");
+    }
 }
-
-function showResult(data) {
-  const isPositive = data.sentiment === "positive";
-  const confidencePct = Math.round(data.confidence * 100);
-
-  resultStrip.classList.remove("hidden", "negative");
-  if (!isPositive) resultStrip.classList.add("negative");
-
-  resultEmoji.textContent = isPositive ? "🙂" : "🙁";
-  resultLabel.textContent = data.sentiment.toUpperCase();
-  resultConfidence.textContent = `confidence ${confidencePct}%`;
-  confidenceFill.style.width = `${confidencePct}%`;
+function displayResult(data) {
+    let sentiment =
+        data.sentiment ||
+        data.prediction ||
+        data.label;
+    let score =
+        data.score ??
+        data.confidence ??
+        data.probability;
+    if (
+        typeof score === "number" &&
+        score <= 1
+    ) {
+        score = score * 100;
+    }
+    if (!sentiment) {
+        sentiment =
+            score >= 50
+                ? "Positive"
+                : "Negative";
+    }
+    if (
+        typeof score !== "number" ||
+        isNaN(score)
+    ) {
+        score = 0;
+    }
+    score =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                score
+            )
+        );
+    sentiment =
+        String(sentiment)
+            .toLowerCase();
+    if (
+        sentiment.includes("positive")
+    ) {
+        showPositive(score);
+    } else {
+        showNegative(score);
+    }
+    resultSection.classList.add("show");
+    setTimeout(() => {
+        resultSection.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }, 100);
 }
-
-function showError(message) {
-  errorBox.textContent = message;
-  errorBox.classList.remove("hidden");
+function showPositive(score) {
+    sentimentText.textContent =
+        "Positive";
+    sentimentText.style.color =
+        "#28d6a0";
+    sentimentEmoji.textContent =
+        "😊";
+    sentimentCircle.style.background =
+        "rgba(27, 202, 145, 0.08)";
+    sentimentCircle.style.borderColor =
+        "rgba(27, 202, 145, 0.45)";
+    sentimentDescription.textContent =
+        "The text expresses a positive sentiment with encouraging or favorable language.";
+    confidenceText.textContent =
+        Math.round(score) + "%";
+    progressBar.style.width =
+        Math.round(score) + "%";
 }
-
-function hideError() {
-  errorBox.classList.add("hidden");
-}
-
-function setLoading(isLoading) {
-  analyzeBtn.disabled = isLoading;
-  analyzeBtn.textContent = isLoading ? "Analyzing…" : "Analyze";
+function showNegative(score) {
+    sentimentText.textContent =
+        "Negative";
+    sentimentText.style.color =
+        "#ff6674";
+    sentimentEmoji.textContent =
+        "😞";
+    sentimentCircle.style.background =
+        "rgba(255, 70, 90, 0.08)";
+    sentimentCircle.style.borderColor =
+        "rgba(255, 70, 90, 0.45)";
+    sentimentDescription.textContent =
+        "The text expresses a negative sentiment with unfavorable or critical language.";
+    confidenceText.textContent =
+        Math.round(score) + "%";
+    progressBar.style.width =
+        Math.round(score) + "%";
 }

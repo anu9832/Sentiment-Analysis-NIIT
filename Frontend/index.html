@@ -1,51 +1,362 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sentiment Reader</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Sentiment Reader - AI powered sentiment analysis using neural networks">
+    <title>Sentiment Reader | Neural Network</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
 </head>
 <body>
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <span>✦</span>
+                </div>
 
-  <main class="page">
-    <header class="page-head">
-      <h1>Sentiment Reader</h1>
-      <p class="sub">Paste a sentence or a short review.Will guess whether it's positive or negative.</p>
-    </header>
+                <span>Sentiment Reader</span>
+            </a>
 
-    <section class="card">
-      <label for="review-text" class="field-label">Text to analyze</label>
-      <textarea id="review-text" rows="6" placeholder="e.g. The pacing dragged in the middle but the ending completely won me over."></textarea>
+            <nav class="nav-links">
+                <a href="#home" class="active">Home</a>
+                <a href="#about">About</a>
+                <a href="#how-it-works">How It Works</a>
+            </nav>
 
-      <div class="controls">
-        <button id="analyze-btn" type="button">Analyze</button>
-        <span id="char-count" class="char-count">0 characters</span>
-      </div>
+            <button class="mobile-menu-btn"
+                    id="mobileMenuBtn"
+                    aria-label="Open menu">
+                ☰
+            </button>
 
-      <div id="error-box" class="error-box hidden"></div>
-    </section>
-
-    <section id="result-strip" class="result-strip hidden">
-      <div class="result-row">
-        <span id="result-emoji" class="result-emoji">🙂</span>
-        <div class="result-text">
-          <span id="result-label" class="result-label">POSITIVE</span>
-          <span id="result-confidence" class="result-confidence">confidence 0%</span>
         </div>
-      </div>
-      <div class="confidence-track">
-        <div id="confidence-fill" class="confidence-fill"></div>
-      </div>
-    </section>
+        <div class="mobile-nav" id="mobileNav">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#how-it-works">How It Works</a>
+        </div>
+    </header>
+    <main id="home">
+        <section class="hero">
 
-    <footer class="page-foot">
-      <!-- <span>FastAPI backend · Keras model · trained on IMDb reviews</span> -->
+            <div class="hero-icon">
+                ✦
+            </div>
+
+            <p class="small-title">
+                AI POWERED TEXT ANALYSIS
+            </p>
+
+            <h2>
+                Understand the
+                <span>Emotion</span>
+                Behind Words
+            </h2>
+
+            <p class="hero-description">
+                Paste a sentence or a short review.Will guess whether it's positive or negative.
+            </p>
+        </section>
+        <section class="analyzer-section">
+            <div class="analyzer-card">
+                <div class="card-header">
+                    <div class="header-icon">
+                        ◈
+                    </div>
+                    <div>
+                        <h2>Analyze Your Text</h2>
+                        <p>
+                            Enter a review, message, or any text
+                            to analyze its sentiment.
+                        </p>
+                    </div>
+                </div>
+                <div class="input-container">
+                    <textarea
+                        id="textInput"
+                        maxlength="1000"
+                        placeholder="Example: I really enjoyed this product. It works perfectly and exceeded my expectations..."
+                    ></textarea>
+
+                    <div class="character-count">
+                        <span id="charCount">0</span>/1000
+                    </div>
+                </div>
+                <div class="sample-area">
+
+                    <span class="sample-label">
+                        Try a sample:
+                    </span>
+
+                    <button class="sample-btn"
+                            data-text="This product is absolutely amazing! I really love it.">
+                        Positive
+                    </button>
+
+                    <button class="sample-btn"
+                            data-text="I am very disappointed with this product. It does not work properly.">
+                        Negative
+                    </button>
+                  </div>
+                <button class="analyze-btn" id="analyzeBtn">
+
+                    <span class="btn-icon">✦</span>
+
+                    <span id="btnText">
+                        Analyze Sentiment
+                    </span>
+
+                    <span class="arrow">
+                        →
+                    </span>
+                </button>
+                <div class="loading" id="loading">
+
+                    <div class="spinner"></div>
+
+                    <span>
+                        Analyzing your text...
+                    </span>
+                </div>
+            </div>
+        </section>
+        <section class="result-section" id="resultSection">
+
+            <div class="result-card">
+
+                <div class="result-header">
+
+                    <div class="header-icon">
+                        ◈
+                    </div>
+
+                    <div>
+                        <h2>Analysis Result</h2>
+
+                        <p>
+                            Neural network prediction
+                        </p>
+                    </div>
+                </div>
+                <div class="result-content">
+                    <div class="sentiment-box">
+
+                        <div class="sentiment-circle"
+                             id="sentimentCircle">
+
+                            <span id="sentimentEmoji">
+                                😊
+                            </span>
+                        </div>
+                        <div>
+
+                            <p class="result-label">
+                                DETECTED SENTIMENT
+                            </p>
+
+                            <h3 id="sentimentText">
+                                Positive
+                            </h3>
+
+                            <p id="sentimentDescription">
+                                The text expresses a positive sentiment.
+                            </p>
+
+                        </div>
+                    </div>
+                    <div class="confidence-box">
+
+                        <div class="confidence-top">
+                            <span>
+                                Confidence Score
+                            </span>
+                            <strong id="confidenceText">
+                                87%
+                            </strong>
+                        </div>
+
+                        <div class="progress-bar">
+                            <div class="progress"
+                                 id="progressBar">
+                            </div>
+
+                        </div>
+                        <p>
+                            Neural network prediction confidence
+                        </p>
+                    </div>
+                </div>
+                <div class="result-details">
+
+                    <div class="detail-item">
+
+                        <span>Model</span>
+
+                        <strong>
+                            Neural Network
+                        </strong>
+
+                    </div>
+                    <div class="detail-item">
+
+                        <span>Task</span>
+
+                        <strong>
+                            Binary Classification
+                        </strong>
+
+                    </div>
+
+                    <div class="detail-item">
+
+                        <span>Status</span>
+
+                        <strong class="status">
+                            ● Completed
+                        </strong>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <section class="info-section" id="about">
+            <div class="section-title">
+                <span>ABOUT THE PROJECT</span>
+                <h2>
+                    Simple. Intelligent. Explainable.
+                </h2>
+                <p>
+                    This project uses a trained neural network
+                    to automatically classify text sentiment.
+                </p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        ◉
+                    </div>
+                    <h3>
+                        Neural Network
+                    </h3>
+                    <p>
+                        A trained neural network processes
+                        the input text and predicts its sentiment.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        ⚡
+                    </div>
+                    <h3>
+                        Fast Analysis
+                    </h3>
+                    <p>
+                        Get sentiment predictions quickly
+                        through a lightweight FastAPI backend.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        ◇
+                    </div>
+                    <h3>
+                        Easy to Use
+                    </h3>
+                    <p>
+                        Enter your text and receive a clear
+                        sentiment result with confidence.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section class="how-section" id="how-it-works">
+
+            <div class="section-title">
+
+                <span>HOW IT WORKS</span>
+
+                <h2>
+                    From Text to Prediction
+                </h2>
+
+            </div>
+            <div class="steps">
+
+                <div class="step">
+                    <div class="step-number">
+                        01
+                    </div>
+
+                    <h3>
+                        Enter Text
+                    </h3>
+
+                    <p>
+                        Type or paste your review or message.
+                    </p>
+
+                </div>
+                <div class="step">
+                    <div class="step-number">
+                        02
+                    </div>
+
+                    <h3>
+                        Neural Network
+                    </h3>
+
+                    <p>
+                        Your text is processed by the trained model.
+                    </p>
+
+                </div>
+                <div class="step">
+
+                    <div class="step-number">
+                        03
+                    </div>
+                    <h3>
+                        Get Result
+                    </h3>
+                    <p>
+                        Receive the predicted sentiment and confidence.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+
+        <div class="footer-content">
+
+            <div class="footer-logo">
+                ✦ Sentiment Reader
+            </div>
+
+            <p>
+                Powered by Neural Network
+            </p>
+
+            <span>
+                © 2026 Sentiment Reader
+            </span>
+        </div>
     </footer>
-  </main>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
